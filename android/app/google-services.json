@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "317090057044",
+    "project_id": "ponten",
+    "storage_bucket": "ponten.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317090057044:android:497beba5a7f586970d16c1",
+        "android_client_info": {
+          "package_name": "com.alifma.ponten"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAd953Z4_BRGdeUkxsPyrqIreqsn9H6yGg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
