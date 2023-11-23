@@ -1,29 +1,16 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:ponten/views/login_view.dart';
-import 'firebase_options.dart';
+import 'package:ponten/firebase_options.dart';
 
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  runApp(MaterialApp(
-    title: 'Flutter Demo',
-    theme: ThemeData(
-      colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      useMaterial3: true,
-    ),
-    home: const LoginView(),
-  ));
-}
-
-class RegisterView extends StatefulWidget {
-  const RegisterView({super.key});
+class LoginView extends StatefulWidget {
+  const LoginView({super.key});
 
   @override
-  State<RegisterView> createState() => _RegisterViewState();
+  State<LoginView> createState() => _LoginViewState();
 }
 
-class _RegisterViewState extends State<RegisterView> {
+class _LoginViewState extends State<LoginView> {
   late final TextEditingController _email;
   late final TextEditingController _password;
   @override
@@ -45,7 +32,7 @@ class _RegisterViewState extends State<RegisterView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Register',
+          'Login',
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.blue,
@@ -82,29 +69,29 @@ class _RegisterViewState extends State<RegisterView> {
                       final password = _password.text;
                       try {
                         final userCredential = await FirebaseAuth.instance
-                            .createUserWithEmailAndPassword(
+                            .signInWithEmailAndPassword(
                                 email: email, password: password);
                         print(userCredential);
                       } on FirebaseAuthException catch (e) {
                         switch (e.code) {
-                          case 'email-already-in-use':
-                            print("Email already inuse");
+                          case 'user-not-found':
+                            print("User not found");
                             break;
-                          case 'invalid-email':
-                            print("invalid-email");
+                          case 'invalid-credential':
+                            print("Invalid credential");
                             break;
-                          case 'weak-password':
-                            print("Password too weak");
+                          case 'wrong-password':
+                            print("Wrong password");
                             break;
                           default:
                             print(
                                 "Something bad happened on firebase, ${e.code}");
                         }
                       } catch (e) {
-                        print(e.toString());
+                        print("Something bad happened");
                       }
                     },
-                    child: const Text('Register'),
+                    child: const Text('Login'),
                   ),
                 ],
               );
