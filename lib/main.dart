@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:ponten/constants/routes.dart';
 import 'package:ponten/firebase_options.dart';
 import 'package:ponten/views/login_view.dart';
+import 'package:ponten/views/notes_view.dart';
 import 'package:ponten/views/register_view.dart';
 import 'package:ponten/views/verify_email_view.dart';
 
@@ -16,8 +18,10 @@ void main() {
     ),
     home: const HomePage(),
     routes: {
-      '/login': (contest) => const LoginView(),
-      '/register': (contest) => const RegisterView(),
+      loginRoute: (context) => const LoginView(),
+      registerRoute: (context) => const RegisterView(),
+      notesRoute: (context) => const NotesView(),
+      verifyEmailRoute: (context) => const VerifyEmailView(),
     },
   ));
 }
@@ -36,14 +40,13 @@ class HomePage extends StatelessWidget {
             final user = FirebaseAuth.instance.currentUser;
             if (user != null) {
               if (user.emailVerified) {
-                print("user already verified");
+                return const NotesView();
               } else {
                 return const VerifyEmailView();
               }
             } else {
               return const LoginView();
             }
-            return const Text('Done');
           default:
             return const CircularProgressIndicator();
         }
@@ -51,3 +54,5 @@ class HomePage extends StatelessWidget {
     );
   }
 }
+
+enum MenuAction { logout }

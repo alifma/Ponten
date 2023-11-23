@@ -1,5 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'dart:developer' as devtools show log;
+
+import 'package:ponten/constants/routes.dart';
+import 'package:ponten/utils/show_error_dialog.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -60,26 +64,42 @@ class _LoginViewState extends State<LoginView> {
               final email = _email.text;
               final password = _password.text;
               try {
-                final userCredential = await FirebaseAuth.instance
-                    .signInWithEmailAndPassword(
-                        email: email, password: password);
-                print(userCredential);
+                await FirebaseAuth.instance.signInWithEmailAndPassword(
+                  email: email,
+                  password: password,
+                );
+                final user = FirebaseAuth.instance.currentUser;
+                if (user?.emailVerified ?? false) {
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    notesRoute,
+                    (route) => false,
+                  );
+                } else {
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    verifyEmailRoute,
+                    (route) => false,
+                  );
+                }
               } on FirebaseAuthException catch (e) {
+                if (!context.mounted) return;
                 switch (e.code) {
                   case 'user-not-found':
-                    print("User not found");
-                    break;
+                    await showErrorDialog(context, "User not found");
                   case 'invalid-credential':
-                    print("Invalid credential");
-                    break;
+                    await showErrorDialog(context, "Invalid credential");
+                  case 'invalid-email':
+                    await showErrorDialog(context, "Invalid email");
                   case 'wrong-password':
-                    print("Wrong password");
-                    break;
+                    await showErrorDialog(context, "Wrong password");
+                    return;
                   default:
-                    print("Something bad happened on firebase, ${e.code}");
+                    await showErrorDialog(context,
+                        "Something bad happened on firebase, ${e.code}");
                 }
               } catch (e) {
-                print("Something bad happened");
+                if (!context.mounted) return;
+                await showErrorDialog(
+                    context, "Something bad happened, ${e.toString()}");
               }
             },
             child: const Text('Login'),
@@ -87,7 +107,7 @@ class _LoginViewState extends State<LoginView> {
           TextButton(
               onPressed: () {
                 Navigator.of(context)
-                    .pushNamedAndRemoveUntil('/register', (route) => false);
+                    .pushNamedAndRemoveUntil(registerRoute, (route) => false);
               },
               child: const Text('Not registered? register here'))
         ],

@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:ponten/firebase_options.dart';
+import 'dart:developer' as devtools show log;
+
+import 'package:ponten/constants/routes.dart';
+import 'package:ponten/utils/show_error_dialog.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -65,23 +67,27 @@ class _RegisterViewState extends State<RegisterView> {
                 final userCredential = await FirebaseAuth.instance
                     .createUserWithEmailAndPassword(
                         email: email, password: password);
-                print(userCredential);
+                devtools.log(userCredential.toString());
+                Navigator.of(context).pushNamed(verifyEmailRoute);
               } on FirebaseAuthException catch (e) {
+                if (!context.mounted) return;
                 switch (e.code) {
                   case 'email-already-in-use':
-                    print("Email already inuse");
+                    showErrorDialog(context, "Email already inuse");
                     break;
                   case 'invalid-email':
-                    print("invalid-email");
+                    showErrorDialog(context, "invalid-email");
                     break;
                   case 'weak-password':
-                    print("Password too weak");
+                    showErrorDialog(context, "Password too weak");
                     break;
                   default:
-                    print("Something bad happened on firebase, ${e.code}");
+                    devtools
+                        .log("Something bad happened on firebase, ${e.code}");
                 }
               } catch (e) {
-                print(e.toString());
+                if (!context.mounted) return;
+                showErrorDialog(context, e.toString());
               }
             },
             child: const Text('Register'),
@@ -89,7 +95,7 @@ class _RegisterViewState extends State<RegisterView> {
           TextButton(
               onPressed: () {
                 Navigator.of(context)
-                    .pushNamedAndRemoveUntil('/login', (route) => false);
+                    .pushNamedAndRemoveUntil(loginRoute, (route) => false);
               },
               child: const Text('Already registered? login here'))
         ],
